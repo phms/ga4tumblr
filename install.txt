@@ -1,0 +1,11 @@
+ga4Tumblr
+=========
+
+Add in the Description area of your Tumblr the snippet below, replacing the UA-XXXXX-X by your Google Analytics profile code.
+
+
+	<!-- https://code.google.com/p/ga4tumblr/ -->
+	<script type="text/javascript">
+	var ga4tumblr_ua = "UA-XXXXX-X";
+	</script>
+	<script type="text/javascript" charset="UTF-8" src="http://phms4server.appspot.com/fake-cdn/js/ga4tumblr.min.js"></script>
