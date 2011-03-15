@@ -1,7 +1,5 @@
 "use strict";
 
-// var ga4tumblr_ua = "UA-17169655-3";
-
 var ga4tumblr = {
 	ua : ga4tumblr_ua,
 
