@@ -1,17 +1,17 @@
 "use strict";
 
-// $Rev: NUMBER $
+// var ga4tumblr_ua = "UA-17169655-3";
 
 var ga4tumblr = {
 	ua : ga4tumblr_ua,
 
-	version : 1.2,
+	version : 1.3,
 
 	path : String(document.location.pathname).toLowerCase(),
 
 	host : String(document.location.host).toLowerCase(),
 
-	owner_cookie : ("ga4tumblr_owner" + "=" + escape(document.title)),
+	owner_cookie : ("ga4tumblr_owner" + "=" + window.escape(document.title)),
 
 	set_owner : function () {
 		document.cookie =  (ga4tumblr.owner_cookie + "; domain=.tumblr.com; path=/");
@@ -36,9 +36,12 @@ var ga4tumblr = {
 			throw "GA account not set!";
 		}
 
-		var _gaq = _gaq || [];
-		_gaq.push(['_setAccount', ga4tumblr.ua]);
-		_gaq.push(['_trackPageview']);
+		if (typeof(window._gaq) === "undefined") {
+			window._gaq = [];
+		}
+
+		window._gaq.push(['_setAccount', ga4tumblr.ua]);
+		window._gaq.push(['_trackPageview']);
 
 		(function () {
 			var ga = document.createElement('script');
@@ -61,18 +64,18 @@ var ga4tumblr = {
 				};
 
 				jQuery("a:external").mousedown(function () {
-					_gaq.push(['_trackPageview', path + "external/" + this.hostname]);
+					window._gaq.push(['_trackPageview', path + "external/" + this.hostname]);
 				});
 
 				jQuery("a[href^='#']").mousedown(function () {
-					_gaq.push(['_trackPageview', path + "hash/" + this.hash]);
+					window._gaq.push(['_trackPageview', path + "hash/" + this.hash]);
 				});
 
 				// experimental
 				/* if (jQuery("#tumblr_controls").contents().find("a[href^='http://www.tumblr.com/customize']").size() > 0) {
 					ga4tumblr.set_owner();
 					// var login = ga4tumblr.host.split(".");
-					// _gaq.push(["_setVar", String(login[0])]);
+					// window._gaq.push(["_setVar", String(login[0])]);
 				} */
 			} catch (e) {
 				_track_error_event(e);
@@ -110,9 +113,9 @@ var ga4tumblr = {
 };
 
 // Source: http://www.directperformance.com.br/javascript-debug-simples-com-google-analytics
-function _track_error_event (exception) {
-	if (typeof(_gaq) !== "undefined") {
-		_gaq.push(['_trackEvent', 'Exception ' + (exception.name || 'Error'), //event category
+function _track_error_event(exception) {
+	if (typeof(window._gaq) !== "undefined") {
+		window._gaq.push(['_trackEvent', 'Exception ' + (exception.name || 'Error'), //event category
 			exception.message || exception, //event action
 			document.location.href //event label
 		]);
