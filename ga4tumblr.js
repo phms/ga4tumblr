@@ -1,5 +1,7 @@
 "use strict";
 
+// $Rev: NUMBER $
+
 var ga4tumblr = {
 	ua : ga4tumblr_ua,
 
