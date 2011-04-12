@@ -1,6 +1,9 @@
 "use strict";
 
-// var ga4tumblr_ua = "UA-17169655-3";
+// Ver: $Revision$
+// Data: $Date$
+
+// var ga4tumblr_ua = "UA-XXXXX-X";
 
 var ga4tumblr = {
 	ua : ga4tumblr_ua,
@@ -67,8 +70,15 @@ var ga4tumblr = {
 					window._gaq.push(['_trackPageview', path + "external/" + this.hostname]);
 				});
 
-				jQuery("a[href^='#']").mousedown(function () {
-					window._gaq.push(['_trackPageview', path + "hash/" + this.hash]);
+				jQuery("a[href*='#']").mousedown(function () {
+					var hash = this.hash;
+					if (hash) { 
+						hash = hash.substr(1);
+					} else {
+						hash = jQuery.trim(jQuery(this).text()).replace(/\s/g, "-");
+					}
+					
+					window._gaq.push(['_trackPageview', path + "hash/" + hash]);
 				});
 
 				// experimental
