@@ -1,7 +1,7 @@
 ga4Tumblr
 =========
 
-Add in the Description area of your Tumblr the snippet below, replacing the UA-XXXXX-X by your Google Analytics profile code.
+Add the snippet below in the "Description" area of your Tumblr, replacing the UA-XXXXX-X by your Google Analytics profile code.
 
 
 	<!-- https://code.google.com/p/ga4tumblr/ -->

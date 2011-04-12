@@ -8,7 +8,7 @@
 var ga4tumblr = {
 	ua : ga4tumblr_ua,
 
-	version : 1.3,
+	version : 1.4,
 
 	path : String(document.location.pathname).toLowerCase(),
 
