@@ -1,25 +1,51 @@
 "use strict";
 
-// Ver: $Revision$
-// Data: $Date$
-
 // var ga4tumblr_ua = "UA-XXXXX-X";
+
+/*!
+ * ga4tumblr
+ * http://code.google.com/p/ga4tumblr/downloads/list
+ *
+ * Copyright 2011, @fabiophms
+ * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+*/
+
+/*
+ * Includes jQuery JavaScript Library
+ * http://jquery.com/
+ * Copyright 2011, John Resig
+ * Dual licensed under the MIT or GPL Version 2 licenses.
+ * http://jquery.org/license
+ *
+ * Includes Sizzle.js
+ * http://sizzlejs.com/
+ * Copyright 2011, The Dojo Foundation
+ * Released under the MIT, BSD, and GPL Licenses.
+ *
+ * Includes jQuery.appear v1.1.1
+ * http://code.google.com/p/jquery-appear/
+ * Copyright (c) 2009 Michael Hixson
+ * Licensed under the MIT license (http://www.opensource.org/licenses/mit-license.php)
+ *
+ * Adaptation to 'Debuging Javascript with Google Analytics'
+ * http://www.directperformance.com.br/en/javascript-debug-simples-com-google-analytics
+ * 2010, Eduardo Cereto
+*/
 
 var ga4tumblr = {
 	ua : ga4tumblr_ua,
-
-	version : 1.4,
-
+	version : 1.5,
 	path : String(document.location.pathname).toLowerCase(),
-
 	host : String(document.location.host).toLowerCase(),
-
+	protocol : String(document.location.protocol).toLowerCase(),
 	owner_cookie : ("ga4tumblr_owner" + "=" + window.escape(document.title)),
-
+	a : document.createElement("a"),
+	str2link : function(url) { return ga4tumblr.a.href = url; },
+	
 	set_owner : function () {
 		document.cookie =  (ga4tumblr.owner_cookie + "; domain=.tumblr.com; path=/");
 	},
-
+	
 	is_owner : function () {
 		if (
 		  String(document.cookie).indexOf(ga4tumblr.owner_cookie) !== -1
@@ -29,58 +55,63 @@ var ga4tumblr = {
 			ga4tumblr.set_owner();
 			return true;
 		}
-
 		return false;
 	},
-
+	
 	load_ga : function () {
-
 		if (!ga4tumblr.ua) {
 			throw "GA account not set!";
 		}
-
 		if (typeof(window._gaq) === "undefined") {
 			window._gaq = [];
 		}
-
 		window._gaq.push(['_setAccount', ga4tumblr.ua]);
 		window._gaq.push(['_trackPageview']);
-
 		(function () {
 			var ga = document.createElement('script');
 			ga.type = 'text/javascript';
 			ga.async = true;
 			ga.src = ('https:' === document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-
 			var s = document.getElementsByTagName('script')[0];
 			s.parentNode.insertBefore(ga, s);
 		})();
 	},
-
+	
 	apply_selector : function () {
 		jQuery(document).ready(function () {
 			try {
 				var path = (ga4tumblr.path === "/") ? "/" : (ga4tumblr.path + "/");
+				var url_prefix = (ga4tumblr.protocol + '//' + ga4tumblr.host + '/post/');
 
 				jQuery.expr[':'].external = function (obj) {
 					return (obj.hostname && obj.hostname !== ga4tumblr.host);
 				};
-
 				jQuery("a:external").mousedown(function () {
 					window._gaq.push(['_trackPageview', path + "external/" + this.hostname]);
 				});
-
 				jQuery("a[href*='#']").mousedown(function () {
 					var hash = this.hash;
-					if (hash) { 
+					if (hash) {
 						hash = hash.substr(1);
 					} else {
 						hash = jQuery.trim(jQuery(this).text()).replace(/\s/g, "-");
 					}
-					
+
 					window._gaq.push(['_trackPageview', path + "hash/" + hash]);
 				});
 
+				var permalinks = [];
+				jQuery("a[href^='" + url_prefix + "']").not("a[href*='#']").each(function(){
+					permalinks[jQuery(this).attr('href')] = jQuery(this);
+				});
+				for (var url in permalinks) {
+					if (permalinks.hasOwnProperty(url)) {
+						permalinks[url].appear(function() {
+							ga4tumblr.str2link(url);
+							window._gaq.push(['_trackPageview', ga4tumblr.a.pathname]);
+						});
+					}
+				}
 				// experimental
 				/* if (jQuery("#tumblr_controls").contents().find("a[href^='http://www.tumblr.com/customize']").size() > 0) {
 					ga4tumblr.set_owner();
@@ -101,7 +132,6 @@ var ga4tumblr = {
 		if (id) {
 			script.id = id;
 		}
-
 		if (callback) {
 			if (script.readyState) { // for IE
 				script.onreadystatechange = function () {
@@ -116,13 +146,19 @@ var ga4tumblr = {
 				};
 			}
 		}
-
 		var script_aux = document.getElementsByTagName('script')[0];
 		script_aux.parentNode.insertBefore(script, script_aux);
+	},
+	
+	prepare_selectors : function (){
+		// jQuery.appear v1.1.1
+		(function($){$.fn.appear=function(f,o){var s=$.extend({one:true},o);return this.each(function(){var t=$(this);t.appeared=false;if(!f){t.trigger('appear',s.data);return;}var w=$(window);var c=function(){if(!t.is(':visible')){t.appeared=false;return;}var a=w.scrollLeft();var b=w.scrollTop();var o=t.offset();var x=o.left;var y=o.top;if(y+t.height()>=b&&y<=b+w.height()&&x+t.width()>=a&&x<=a+w.width()){if(!t.appeared)t.trigger('appear',s.data);}else{t.appeared=false;}};var m=function(){t.appeared=true;if(s.one){w.unbind('scroll',c);var i=$.inArray(c,$.fn.appear.checks);if(i>=0)$.fn.appear.checks.splice(i,1);}f.apply(this,arguments);};if(s.one)t.one('appear',s.data,m);else t.bind('appear',s.data,m);w.scroll(c);$.fn.appear.checks.push(c);(c)();});};$.extend($.fn.appear,{checks:[],timeout:null,checkAll:function(){var l=$.fn.appear.checks.length;if(l>0)while(l--)($.fn.appear.checks[l])();},run:function(){if($.fn.appear.timeout)clearTimeout($.fn.appear.timeout);$.fn.appear.timeout=setTimeout($.fn.appear.checkAll,20);}});$.each(['append','prepend','after','before','attr','removeAttr','addClass','removeClass','toggleClass','remove','css','show','hide'],function(i,n){var u=$.fn[n];if(u){$.fn[n]=function(){var r=u.apply(this,arguments);$.fn.appear.run();return r;}}});})(jQuery);
+	
+		ga4tumblr.apply_selector();
 	}
 };
 
-// Source: http://www.directperformance.com.br/javascript-debug-simples-com-google-analytics
+// http://www.directperformance.com.br/en/javascript-debug-simples-com-google-analytics
 function _track_error_event(exception) {
 	if (typeof(window._gaq) !== "undefined") {
 		window._gaq.push(['_trackEvent', 'Exception ' + (exception.name || 'Error'), //event category
@@ -137,16 +173,15 @@ function _track_error_event(exception) {
 
 try {
 	if (!ga4tumblr.is_owner()) {
-
 		ga4tumblr.load_ga();
-
 		if (typeof(jQuery) === "undefined") {
 			ga4tumblr.script_load(
-				document.location.protocol + "//ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.min.js",
-				ga4tumblr.apply_selector
+				// jQuery - most recent version in the 1.x.x family
+				ga4tumblr.protocol + "//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js",
+				ga4tumblr.prepare_selectors
 			);
 		} else {
-			ga4tumblr.apply_selector();
+			ga4tumblr.prepare_selectors();
 		}
 	}
 } catch (e) {
