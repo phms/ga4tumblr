@@ -40,7 +40,11 @@ var ga4tumblr = {
 	protocol : String(document.location.protocol).toLowerCase(),
 	owner_cookie : ("ga4tumblr_owner" + "=" + window.escape(document.title)),
 	a : document.createElement("a"),
-	str2link : function(url) { return ga4tumblr.a.href = url; },
+	
+	str2link : function(url) {
+		ga4tumblr.a.href = url;
+		return ga4tumblr.a;
+	},
 	
 	set_owner : function () {
 		document.cookie =  (ga4tumblr.owner_cookie + "; domain=.tumblr.com; path=/");
@@ -101,14 +105,15 @@ var ga4tumblr = {
 				});
 
 				var permalinks = [];
-				jQuery("a[href^='" + url_prefix + "']").not("a[href*='#']").each(function(){
+				jQuery("a[href^='" + url_prefix + "']:not(a[href*='#'])").each(function(){
 					permalinks[jQuery(this).attr('href')] = jQuery(this);
 				});
 				for (var url in permalinks) {
 					if (permalinks.hasOwnProperty(url)) {
-						permalinks[url].appear(function() {
-							ga4tumblr.str2link(url);
-							window._gaq.push(['_trackPageview', ga4tumblr.a.pathname]);
+						permalinks[url].appear(function(event, url) {
+							window._gaq.push(['_trackPageview', ga4tumblr.str2link(url).pathname]);
+						}, { 
+							data: url
 						});
 					}
 				}
