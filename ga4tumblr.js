@@ -47,14 +47,17 @@ var ga4tumblr = {
 	},
 	
 	set_owner : function () {
-		document.cookie =  (ga4tumblr.owner_cookie + "; domain=.tumblr.com; path=/");
+		var date = new Date();
+		date.setTime(date.getTime() + 31536000000); // one year	
+		document.cookie = (ga4tumblr.owner_cookie + "; domain=.tumblr.com; path=/; expires="+date.toGMTString());
 	},
 	
 	is_owner : function () {
 		if (
 		  String(document.cookie).indexOf(ga4tumblr.owner_cookie) !== -1
-		  || ga4tumblr.path.indexOf("/new/") === 0
 		  || ga4tumblr.host === "safe.tumblr.com"
+		  || ga4tumblr.path.substring(0, 5) === "/new/"
+		  || ga4tumblr.path.substring(0, 6) === "/edit/"
 		) {
 			ga4tumblr.set_owner();
 			return true;
