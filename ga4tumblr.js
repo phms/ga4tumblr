@@ -72,8 +72,11 @@ var ga4tumblr = {
 		if (typeof(window._gaq) === "undefined") {
 			window._gaq = [];
 		}
-		window._gaq.push(['_setAccount', ga4tumblr.ua]);
-		window._gaq.push(['_trackPageview']);
+		window._gaq.push(
+			['_setAccount', ga4tumblr.ua],
+			['_trackPageview'],
+			['_trackPageLoadTime']
+		);
 		(function () {
 			var ga = document.createElement('script');
 			ga.type = 'text/javascript';
