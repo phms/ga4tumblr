@@ -34,11 +34,12 @@
 
 var ga4tumblr = {
 	ua : ga4tumblr_ua,
-	version : 1.5,
+	version : 1.6,
 	path : String(document.location.pathname).toLowerCase(),
 	host : String(document.location.host).toLowerCase(),
 	protocol : String(document.location.protocol).toLowerCase(),
-	owner_cookie : ("ga4tumblr_owner" + "=" + window.escape(document.title)),
+	title : window.escape(String(document.title)),
+	owner_cookie : "ga4tumblr_owner",
 	a : document.createElement("a"),
 	
 	str2link : function(url) {
@@ -49,15 +50,15 @@ var ga4tumblr = {
 	set_owner : function () {
 		var date = new Date();
 		date.setTime(date.getTime() + 31536000000); // one year	
-		document.cookie = (ga4tumblr.owner_cookie + "; domain=.tumblr.com; path=/; expires="+date.toGMTString());
+		document.cookie = (ga4tumblr.owner_cookie + "=" + ga4tumblr.title + "; domain=.tumblr.com; path=/; expires="+date.toGMTString());
 	},
 	
-	is_owner : function () {
+	is_owner : function () { 
 		if (
-		  String(document.cookie).indexOf(ga4tumblr.owner_cookie) !== -1
-		  || ga4tumblr.host === "safe.tumblr.com"
-		  || ga4tumblr.path.substring(0, 5) === "/new/"
-		  || ga4tumblr.path.substring(0, 6) === "/edit/"
+			ga4tumblr.title.indexOf(ga4tumblr.get_cookie(ga4tumblr.owner_cookie)) !== -1 || 
+			ga4tumblr.host === "safe.tumblr.com" ||
+			ga4tumblr.path.substring(0, 5) === "/new/" ||
+			ga4tumblr.path.substring(0, 6) === "/edit/"
 		) {
 			ga4tumblr.set_owner();
 			return true;
@@ -161,6 +162,12 @@ var ga4tumblr = {
 		}
 		var script_aux = document.getElementsByTagName('script')[0];
 		script_aux.parentNode.insertBefore(script, script_aux);
+	},
+	
+	get_cookie : function(key) {
+		var val = document.cookie.match ('(^|;) ?' + key + '=([^;]*)(;|$)');
+		if (val) { return val[2]; }
+		else { return undefined; }
 	},
 	
 	prepare_selectors : function (){
