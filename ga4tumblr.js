@@ -33,8 +33,8 @@
 */
 
 var ga4tumblr = {
-	ua : ga4tumblr_ua,
 	version : 1.6,
+	ua : ga4tumblr_ua,
 	path : String(document.location.pathname).toLowerCase(),
 	host : String(document.location.host).toLowerCase(),
 	protocol : String(document.location.protocol).toLowerCase(),
@@ -92,7 +92,6 @@ var ga4tumblr = {
 		jQuery(document).ready(function () {
 			try {
 				var path = (ga4tumblr.path === "/") ? "/" : (ga4tumblr.path + "/");
-				var url_prefix = (ga4tumblr.protocol + '//' + ga4tumblr.host + '/post/');
 
 				jQuery.expr[':'].external = function (obj) {
 					return (obj.hostname && obj.hostname !== ga4tumblr.host);
@@ -111,8 +110,8 @@ var ga4tumblr = {
 					window._gaq.push(['_trackPageview', path + "hash/" + hash]);
 				});
 
-				if (ga4tumblr.path.substring(0, 6) !== "/post/") {
-					var url, permalinks = [];
+				if (ga4tumblr.path.substring(0, 6) !== "/post/") { // TODO: create a function
+					var url, permalinks = [], url_prefix = (ga4tumblr.protocol + '//' + ga4tumblr.host + '/post/');
 					jQuery("a[href^='" + url_prefix + "']:not(a[href*='#'])").each(function(){
 						permalinks[jQuery(this).attr('href')] = jQuery(this);
 					});
